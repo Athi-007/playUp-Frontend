@@ -1,20 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import "./global.css"; // 1. Crucial: Import your global CSS for NativeWind
+import React from 'react';
+import RootNavigator from './src/Navigator/RouteNavigator';
+import { Provider } from 'react-redux';
+import { store } from './src/utils/appStore';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  <Provider store={store}>
+      <RootNavigator />
+    </Provider>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
