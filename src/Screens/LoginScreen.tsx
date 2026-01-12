@@ -10,55 +10,65 @@ export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [age, setAge] = useState(''); // Added missing state
-  const [fitnessLevel, setFitnessLevel] = useState(''); // Added missing state
-  
-
+  const [age, setAge] = useState('');
+  const [fitnessLevel, setFitnessLevel] = useState('beginner'); // Added missing state
   const [error, setError] = useState('');
   const [isLoginForm, setIsLoginForm] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError("Please fill all fields");
       return;
     }
-    
+
     try {
       setLoading(true);
       setError('');
-      const res = await axios.post(`${BASE_URL}/auth/login`, {
+      
+      console.log("Requesting:", `${BASE_URL}/auth/login`);
+      const response = await axios.post(`${BASE_URL}/auth/login`, {
         email,
         password,
-      }, { withCredentials: true });
+      }, {
+        withCredentials: true
+      });
 
-
-      dispatch(addUser(res));
-      navigation.replace('Profile');
+      dispatch(addUser(response?.data?.data));
+      navigation.replace('Dashboard');
     } catch (err: any) {
-      const msg = err?.message || "Something went wrong";
-      setError(msg|| 'Login failed');
+      
+      console.log("Login Error:", err.response?.data || err.message);
+      setError(err?.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
+
   const handleSignup = async () => {
+    if (!name || !age || !email || !password) {
+      setError("Please fill all fields");
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
-      const res = await axios.post(`${BASE_URL}/auth/signup`, {
+
+
+      const response = await axios.post(`${BASE_URL}/auth/signup`, {
         name,
-        age,
+        age: Number(age),
         fitnessLevel,
         email,
         password,
-      }, { withCredentials: true });
+      });
 
-      dispatch(addUser(res));
-      navigation.replace('Profile');
+      dispatch(addUser(response.data.data));
+      navigation.replace('Dashboard');
     } catch (err: any) {
-      setError(err?.message || 'Signup failed');
+      setError(err?.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -83,19 +93,19 @@ export default function LoginScreen({ navigation }: any) {
               className="border border-gray-300 rounded-lg px-4 py-3 mb-3 focus:border-black"
             />
             <View className="flex-row gap-x-2">
-                <TextInput
+              <TextInput
                 placeholder="Age"
                 value={age}
                 onChangeText={setAge}
                 keyboardType="numeric"
                 className="border border-gray-300 rounded-lg px-4 py-3 mb-3 flex-1"
-                />
-                <TextInput
+              />
+              <TextInput
                 placeholder="Fitness Level"
                 value={fitnessLevel}
                 onChangeText={setFitnessLevel}
                 className="border border-gray-300 rounded-lg px-4 py-3 mb-3 flex-1"
-                />
+              />
             </View>
           </>
         )}

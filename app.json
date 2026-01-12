@@ -7,9 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-
     "platforms": ["android"],
-
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -23,8 +21,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "usesCleartextTraffic": true, 
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.yourname.playup" 
     }
   }
 }
