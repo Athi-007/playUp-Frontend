@@ -14,13 +14,13 @@ export default function BottomNav() {
   const navigation = useNavigation<any>();
 
   return (
-    <View className="flex-row justify-around py-3 border-t bg-white">
+    <View className="flex-row justify-around py-3 border-t border-zinc-800 bg-black">
       {tabs.map((tab) => (
         <Pressable
           key={tab.route}
           onPress={() => navigation.navigate(tab.route)}
         >
-          <Text className="text-black font-medium">
+          <Text className="text-zinc-300 font-medium">
             {tab.label}
           </Text>
         </Pressable>

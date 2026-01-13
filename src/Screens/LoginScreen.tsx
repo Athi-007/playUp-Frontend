@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
 import { addUser } from '../utils/userSlice';
-import { BASE_URL } from '../utils/constants';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../Services/api";
+
 
 export default function LoginScreen({ navigation }: any) {
   const dispatch = useDispatch();
@@ -11,7 +12,7 @@ export default function LoginScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [fitnessLevel, setFitnessLevel] = useState('beginner'); // Added missing state
+  const [fitnessLevel, setFitnessLevel] = useState('beginner');
   const [error, setError] = useState('');
   const [isLoginForm, setIsLoginForm] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -24,22 +25,22 @@ export default function LoginScreen({ navigation }: any) {
 
     try {
       setLoading(true);
-      setError('');
-      
-      console.log("Requesting:", `${BASE_URL}/auth/login`);
-      const response = await axios.post(`${BASE_URL}/auth/login`, {
+      setError("");
+
+      const response = await api.post("/auth/login", {
         email,
         password,
-      }, {
-        withCredentials: true
       });
 
-      dispatch(addUser(response?.data?.data));
-      navigation.replace('Dashboard');
+      const { token, user } = response.data.data;
+
+      await AsyncStorage.setItem("token", token);
+      dispatch(addUser(user));
+
+      navigation.replace("Dashboard");
     } catch (err: any) {
-      
       console.log("Login Error:", err.response?.data || err.message);
-      setError(err?.response?.data?.message || 'Login failed');
+      setError(err?.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -54,10 +55,9 @@ export default function LoginScreen({ navigation }: any) {
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
-
-      const response = await axios.post(`${BASE_URL}/auth/signup`, {
+      const response = await api.post("/auth/signup", {
         name,
         age: Number(age),
         fitnessLevel,
@@ -65,8 +65,12 @@ export default function LoginScreen({ navigation }: any) {
         password,
       });
 
-      dispatch(addUser(response.data.data));
-      navigation.replace('Dashboard');
+      const { token, user } = response.data.data;
+
+      await AsyncStorage.setItem("token", token);
+      dispatch(addUser(user));
+
+      navigation.replace("Dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Signup failed");
     } finally {
@@ -75,12 +79,14 @@ export default function LoginScreen({ navigation }: any) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-white">
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-black">
       <View className="flex-1 justify-center px-6 py-10">
-        <Text className="text-3xl font-bold text-center mb-2">
+        {/* White card layout on black background */}
+        <View className="bg-zinc-900 rounded-3xl px-6 py-8 shadow-lg border border-zinc-800">
+        <Text className="text-3xl font-bold text-center mb-2 text-white">
           {isLoginForm ? 'Welcome Back' : 'Create Account'}
         </Text>
-        <Text className="text-gray-500 text-center mb-8">
+        <Text className="text-zinc-400 text-center mb-8">
           {isLoginForm ? 'Sign in to continue' : 'Fill in your details to get started'}
         </Text>
 
@@ -90,7 +96,8 @@ export default function LoginScreen({ navigation }: any) {
               placeholder="Full Name"
               value={name}
               onChangeText={setName}
-              className="border border-gray-300 rounded-lg px-4 py-3 mb-3 focus:border-black"
+              placeholderTextColor="#9CA3AF"
+              className="border border-zinc-700 bg-zinc-800 text-white rounded-xl px-4 py-3 mb-3"
             />
             <View className="flex-row gap-x-2">
               <TextInput
@@ -98,13 +105,15 @@ export default function LoginScreen({ navigation }: any) {
                 value={age}
                 onChangeText={setAge}
                 keyboardType="numeric"
-                className="border border-gray-300 rounded-lg px-4 py-3 mb-3 flex-1"
+                placeholderTextColor="#9CA3AF"
+                className="border border-zinc-700 bg-zinc-800 text-white rounded-xl px-4 py-3 mb-3 flex-1"
               />
               <TextInput
                 placeholder="Fitness Level"
                 value={fitnessLevel}
                 onChangeText={setFitnessLevel}
-                className="border border-gray-300 rounded-lg px-4 py-3 mb-3 flex-1"
+                placeholderTextColor="#9CA3AF"
+                className="border border-zinc-700 bg-zinc-800 text-white rounded-xl px-4 py-3 mb-3 flex-1"
               />
             </View>
           </>
@@ -116,7 +125,8 @@ export default function LoginScreen({ navigation }: any) {
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
-          className="border border-gray-300 rounded-lg px-4 py-3 mb-3 focus:border-black"
+          placeholderTextColor="#9CA3AF"
+          className="border border-zinc-700 bg-zinc-800 text-white rounded-xl px-4 py-3 mb-3"
         />
 
         <TextInput
@@ -124,11 +134,12 @@ export default function LoginScreen({ navigation }: any) {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          className="border border-gray-300 rounded-lg px-4 py-3 mb-2 focus:border-black"
+          placeholderTextColor="#9CA3AF"
+          className="border border-zinc-700 bg-zinc-800 text-white rounded-xl px-4 py-3 mb-2"
         />
 
         {!!error && (
-          <Text className="text-red-500 text-sm mb-4 font-medium">
+          <Text className="text-red-400 text-sm mb-4 font-medium">
             ⚠️ {error}
           </Text>
         )}
@@ -136,12 +147,14 @@ export default function LoginScreen({ navigation }: any) {
         <Pressable
           onPress={isLoginForm ? handleLogin : handleSignup}
           disabled={loading}
-          className={`py-4 rounded-lg items-center mb-6 ${loading ? 'bg-gray-400' : 'bg-black'}`}
+          className={`py-4 rounded-2xl items-center mb-6 ${
+            loading ? 'bg-zinc-700' : 'bg-white'
+          }`}
         >
           {loading ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={loading ? '#E5E7EB' : '#000000'} />
           ) : (
-            <Text className="text-white font-bold text-lg">
+            <Text className="text-black font-bold text-lg">
               {isLoginForm ? 'Login' : 'Sign Up'}
             </Text>
           )}
@@ -154,14 +167,20 @@ export default function LoginScreen({ navigation }: any) {
           }}
           className="items-center"
         >
-          <Text className="text-gray-600">
+          <Text className="text-zinc-400">
             {isLoginForm ? (
-              <Text>New user? <Text className="text-black font-bold">Sign up</Text></Text>
+              <Text>
+                New user? <Text className="text-white font-bold">Sign up</Text>
+              </Text>
             ) : (
-              <Text>Already have an account? <Text className="text-black font-bold">Login</Text></Text>
+              <Text>
+                Already have an account?{" "}
+                <Text className="text-white font-bold">Login</Text>
+              </Text>
             )}
           </Text>
         </Pressable>
+        </View>
       </View>
     </ScrollView>
   );
