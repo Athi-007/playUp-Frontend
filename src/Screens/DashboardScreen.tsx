@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, StatusBar } from "react-native";
 import AppHeader from "../components/Header";
 import BottomNav from "../components/Footer";
 
