@@ -1,31 +1,17 @@
-// screens/ProfileScreen.tsx
 import React from "react";
 import { View, Text, Image, ScrollView, StatusBar } from "react-native";
 import { useSelector } from "react-redux";
-import { buildAvatarUrl, convertAvatarUrlToPng, parseAvatarUrl } from "../utils/avatar";
 import BottomNav from "../components/Footer";
 
 export default function ProfileScreen() {
   const user = useSelector((state: any) => state.user);
-
-  // Parse existing profileImage URL or use defaults
-  const parsedParams = parseAvatarUrl(user?.profileImage);
-
-  // Build avatar URL from user's saved settings
-  const avatarUrl = convertAvatarUrlToPng(
-    buildAvatarUrl({
-      seed: user?._id?.toString() || "default",
-      glasses: parsedParams.glasses,
-      backgroundColor: parsedParams.backgroundColor,
-    })
-  );
+  const avatarUrl =  user?.profileImage;
 
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={false} />
       <View className="flex-1 bg-black">
         <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
-          {/* Header banner with avatar as background accent */}
           <View className="bg-zinc-900 border-b border-zinc-800 pb-6">
             <View className="h-32 w-full overflow-hidden">
               <Image
@@ -54,7 +40,6 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          {/* User activity section */}
           <View className="px-5 mt-5 mb-4">
             <View className="bg-zinc-900 rounded-3xl p-5 border border-zinc-800">
               <Text className="text-white font-semibold mb-1">Activity</Text>

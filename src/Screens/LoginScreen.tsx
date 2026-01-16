@@ -34,6 +34,8 @@ export default function LoginScreen({ navigation }: any) {
 
       const { token, user } = response.data.data;
 
+      console.log("user:" , user);
+
       await AsyncStorage.setItem("token", token);
       dispatch(addUser(user));
 
@@ -81,7 +83,6 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-black">
       <View className="flex-1 justify-center px-6 py-10">
-        {/* White card layout on black background */}
         <View className="bg-zinc-900 rounded-3xl px-6 py-8 shadow-lg border border-zinc-800">
         <Text className="text-3xl font-bold text-center mb-2 text-white">
           {isLoginForm ? 'Welcome Back' : 'Create Account'}
