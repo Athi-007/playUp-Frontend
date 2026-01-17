@@ -5,7 +5,6 @@ export const store = configureStore({
   reducer: {
     user: userReducer,
   },
-  // DevTools is enabled by default in RTK, but being explicit helps
   devTools: true, 
 });
 
